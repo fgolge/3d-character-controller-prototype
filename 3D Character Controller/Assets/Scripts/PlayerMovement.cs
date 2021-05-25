@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private bool isGrounded;
 
-    void Start()
+    void Awake()
     {
         controller = gameObject.GetComponent<CharacterController>();
         scaleX = transform.localScale.x;
@@ -31,14 +31,15 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundRadius, groundMask);
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            velocity.y = 0f;
         }
 
-        velocity.y += gravity * Time.deltaTime;
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * x + transform.forward * z;
+
+        velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
         if (Input.GetKey(KeyCode.LeftShift))
@@ -46,19 +47,21 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
             controller.Move(move * 1.5f * playerSpeed * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.LeftControl))
+        else if (Input.GetKey(KeyCode.LeftControl))
         {
             transform.localScale = new Vector3(scaleX, scaleY * 0.5f, scaleZ);
             controller.Move(move * 0.5f * playerSpeed * Time.deltaTime);
-        }
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            
         }
         else
         {
             transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
             controller.Move(move * playerSpeed * Time.deltaTime);
+        }
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
 }
